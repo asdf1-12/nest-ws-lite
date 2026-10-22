@@ -1,6 +1,13 @@
 #!/bin/sh
 set -e
-: "${UUID:?UUID env is required}"
+if [ -z "$UUID" ] && [ -n "$SECRET" ]; then
+  # derive UUID from SECRET: see scripts/derive_uuid.sh / README
+  h=$(printf '%s' "$SECRET" | sha256sum | cut -c1-32)
+  v=$(printf '%x' $(( (0x$(printf '%s' "$h" | cut -c17) & 3) | 8 )))
+  UUID="$(echo "$h"|cut -c1-8)-$(echo "$h"|cut -c9-12)-4$(echo "$h"|cut -c14-16)-$v$(echo "$h"|cut -c18-20)-$(echo "$h"|cut -c21-32)"
+  echo "UUID derived from SECRET"
+fi
+: "${UUID:?UUID or SECRET env is required}"
 PORT="${PORT:-3000}"; WSPATH="${WSPATH:-/ws}"
 mkdir -p /srv/www
 echo ok > /srv/www/index.txt

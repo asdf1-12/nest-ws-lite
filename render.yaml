@@ -1,0 +1,12 @@
+services:
+  - type: web
+    name: nest-ws-lite
+    runtime: docker
+    plan: free
+    dockerfilePath: ./Dockerfile
+    healthCheckPath: /
+    envVars:
+      - key: SECRET
+        generateValue: true
+      - key: WSPATH
+        value: /ws
